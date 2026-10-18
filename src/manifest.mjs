@@ -3,7 +3,7 @@ export function validateEntries(entries){
  if(!Array.isArray(entries)||entries.length>100)throw Error('Manifest must contain at most 100 entries.');
  const seen=new Set();
  return entries.map(e=>{
- if(!e||!validName(e.name)||!Number.isSafeInteger(e.size)||e.size<0||!/^[a-f0-9]{64}$/i.test(e.sha256))throw Error('Each entry needs a valid name, nonnegative byte size and 64-digit SHA256.');
+ if(!e||!validName(e.name)||!Number.isSafeInteger(e.size)||e.size<0||typeof e.sha256!=='string'||!/^[a-f0-9]{64}$/i.test(e.sha256))throw Error('Each entry needs a valid name, nonnegative byte size and 64-digit SHA256.');
  if(seen.has(e.name))throw Error('Duplicate manifest filename: '+e.name);
  seen.add(e.name);return {name:e.name,size:e.size,sha256:e.sha256.toLowerCase()};
  }).sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
@@ -24,3 +24,4 @@ export function compareEntries(current,baseline){
  });
 }
 export function exportSums(entries){return validateEntries(entries).map(e=>e.sha256+'  '+e.name).join('\n')+'\n';}
+
