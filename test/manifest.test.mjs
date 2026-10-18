@@ -5,3 +5,6 @@ test('manifest schema and duplicates rejected',()=>{for(const s of ['nope','{}',
 test('comparison reports four states and includes expected/actual',()=>{const r=compareEntries([e('stable'),e('edit','b'),e('fresh')],[e('stable'),e('edit'),e('lost')]);assert.deepEqual(r.map(x=>[x.name,x.status]),[['edit','changed'],['fresh','new'],['lost','missing'],['stable','match']]);assert.equal(r[2].actual,null);});
 test('size mismatch is a change even with same hash',()=>assert.equal(compareEntries([e('a','a',2)],[e('a')])[0].status,'changed'));
 test('case-sensitive names and standard text-mode sums',()=>{assert.equal(compareEntries([e('A')],[e('a')]).length,2);assert.equal(exportSums([e('a.txt')]),'a'.repeat(64)+'  a.txt\n');});
+test('manifest hash values must be strings rather than coerced arrays',()=>{
+ assert.throws(()=>exportManifest([{name:'a',size:1,sha256:['a'.repeat(64)]}]),/64-digit/);
+});
