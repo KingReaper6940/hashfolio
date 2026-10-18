@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {parseManifest,exportManifest,compareEntries,exportSums} from '../src/manifest.mjs';
+const e=(name,hash='a',size=1)=>({name,size,sha256:hash.repeat(64)});
+test('strict round trip normalizes hex',()=>{const entries=[e('b','B'),e('a')];assert.deepEqual(parseManifest(exportManifest(entries)).map(x=>x.name),['a','b']);assert.equal(parseManifest(exportManifest(entries))[1].sha256,'b'.repeat(64));});
+test('manifest schema and duplicates rejected',()=>{for(const s of ['nope','{}',JSON.stringify({format:'hashfolio-v1',algorithm:'SHA-256',entries:[e('a'),e('a')]})])assert.throws(()=>parseManifest(s));assert.throws(()=>exportManifest([{name:'x',size:-1,sha256:'a'.repeat(64)}]));assert.throws(()=>parseManifest(' '.repeat(65537)));});
+test('comparison reports four states and includes expected/actual',()=>{const r=compareEntries([e('stable'),e('edit','b'),e('fresh')],[e('stable'),e('edit'),e('lost')]);assert.deepEqual(r.map(x=>[x.name,x.status]),[['edit','changed'],['fresh','new'],['lost','missing'],['stable','match']]);assert.equal(r[2].actual,null);});
+test('size mismatch is a change even with same hash',()=>assert.equal(compareEntries([e('a','a',2)],[e('a')])[0].status,'changed'));
+test('case-sensitive names and standard text-mode sums',()=>{assert.equal(compareEntries([e('A')],[e('a')]).length,2);assert.equal(exportSums([e('a.txt')]),'a'.repeat(64)+'  a.txt\n');});
