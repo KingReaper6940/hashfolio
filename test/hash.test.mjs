@@ -7,3 +7,9 @@ test('binary bytes match independent Node hash',async()=>{const bytes=Uint8Array
 test('batch ordering, byte sizes and progress',async()=>{const progress=[];const result=await hashFiles([file('z.txt','世界'),file('a.txt','abc')],{onProgress:n=>progress.push(n)});assert.equal(result[1].size,6);assert.deepEqual(result.map(e=>e.name),['a.txt','z.txt']);assert.deepEqual(progress,[1,2]);});
 test('duplicate names, limits and paths rejected',()=>{for(const f of [[],[file('a',''),file('a','')],[file('../a','')],[{name:'x',size:MAX_FILE+1}],Array(101).fill(file('x',''))])assert.throws(()=>validateFiles(f));assert.throws(()=>validateFiles([1,2,3].map(i=>({name:String(i),size:MAX_BATCH/3+1}))));});
 test('cancellation and failed reads never return partial manifest',async()=>{await assert.rejects(hashFiles([file('a','')],{isCancelled:()=>true}),/Cancelled/);await assert.rejects(hashFiles([{name:'a',size:1,arrayBuffer:async()=>new ArrayBuffer(0)}]),/size changed/);});
+test('browser demo has independent baseline and all four comparison statuses',async()=>{
+ const {demoFiles,demoBaseline}=await import('../public/demo.mjs');
+ const current=demoFiles.map(f=>({name:f.name,size:Buffer.byteLength(f.text),sha256:createHash('sha256').update(f.text).digest('hex')}));
+ const {compareEntries}=await import('../src/manifest.mjs');
+ assert.deepEqual(compareEntries(current,demoBaseline.entries).map(r=>r.status),['changed','missing','new','match']);
+});

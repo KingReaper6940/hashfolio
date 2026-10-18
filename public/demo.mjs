@@ -1,0 +1,2 @@
+export const demoFiles=[{"name":"stable.txt","text":"abc"},{"name":"changed.txt","text":"new"},{"name":"new.txt","text":"hello"}];
+export const demoBaseline={"format":"hashfolio-v1","algorithm":"SHA-256","entries":[{"name":"changed.txt","size":3,"sha256":"cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4"},{"name":"missing.txt","size":4,"sha256":"283bb9deef02e6843abfb538efa1eca70801bd8a701c3f98191e123496339247"},{"name":"stable.txt","size":3,"sha256":"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"}]};
