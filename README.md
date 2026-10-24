@@ -1,5 +1,7 @@
 # Hashfolio
 
+[Open hashfolio](https://hashfolio.vercel.app)
+
 Keep a receipt for your files.
 
 Hashfolio creates SHA-256 snapshots of local file batches and compares later batches against a previous snapshot. Contents are processed in your browser without uploads, accounts or analytics.
